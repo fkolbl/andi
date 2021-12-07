@@ -13,6 +13,6 @@ setup(
     'Programming Language :: Python :: 3',
     'Operating System :: OS Independent'
      ],
-    install_requires=['ctypes', 'numpy'], #external packages as dependencies
+    install_requires=['numpy'], #external packages as dependencies
     python_requires = '>=3.6'
 )

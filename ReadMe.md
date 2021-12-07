@@ -14,7 +14,6 @@ pip install something
 # Requirements
 
 Third party softwares (NEURON and COMSOL) have to be installed before NRV installation. NRV has been developped for python 3. Recommended packages:
-- ctypes
 - numpy
 
 

@@ -2,7 +2,7 @@
 *Python librairy for controling the Analog Discovery 2 modul from digilent*
 
 blablabla
-
+this is a test
 
 # Installation
 

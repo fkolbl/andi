@@ -26,7 +26,7 @@ from   warnings     import warn
 from   time         import sleep
 import faulthandler
 
-sys.path.append("./andi/")
+sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import dwfconstants as DWFC
 
 faulthandler.enable()

@@ -13,9 +13,9 @@ pip install something
 
 # Requirements
 
-Third party softwares (NEURON and COMSOL) have to be installed before NRV installation. NRV has been developped for python 3. Recommended packages:
+Third party software (Waveform) has to be installed before Andi installation. Andi has been developped for python 3. Recommended packages:
 - numpy
 
 
 for the third party softwares, please visit:
-[WaveformSDK]: https://digilent.com/shop/software/digilent-waveforms/
+[Waveform]: https://digilent.com/shop/software/digilent-waveforms/

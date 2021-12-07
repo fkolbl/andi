@@ -25,6 +25,7 @@ import numpy        as np
 from   warnings     import warn
 from   time         import sleep
 import faulthandler
+import os
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import dwfconstants as DWFC

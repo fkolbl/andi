@@ -20,4 +20,4 @@ Recommended packages:
 
 
 for the third party softwares, please visit:
-- [Waveform]: https://digilent.com/shop/software/digilent-waveforms/
+[Waveform]: https://digilent.com/shop/software/digilent-waveforms/

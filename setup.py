@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-   name='andi',
+   name='andi-py',
    version='0.0.1',
    description='Analog Discovery 2 python API',
    long_description = 'file: README.md',

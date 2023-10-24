@@ -963,7 +963,7 @@ class Andi(object):
 			print("Samples could be corrupted! Reduce frequency")
 
 		t = np.linspace(0,N/f_sample,num=N,endpoint=False)
-		data = np.fromiter(rgdSamples, dtype = np.float)
+		data = np.fromiter(rgdSamples, dtype = np.float64)
 
 		if filename!='':
 			f = open(filename, "w")
@@ -1052,7 +1052,7 @@ class Andi(object):
 			issue_warning("Samples could be corrupted! Reduce frequency")
 
 		t = np.linspace(0, localsamples/cfreq.value, num=localsamples, endpoint=False)
-		data = np.fromiter(rgdSamples, dtype = np.float, count=localsamples)
+		data = np.fromiter(rgdSamples, dtype = np.float64, count=localsamples)
 		return t, data
 		#return flist
 
@@ -1163,9 +1163,9 @@ class Andi(object):
 			if status.value == DWFC.DwfStateDone.value :
 				break
 		dwf.FDwfAnalogInStatusData(self.hdwf, 0, rgdSamples, self.acq_samples) # get channel 1 data
-		data0 = np.fromiter(rgdSamples, dtype = np.float)
+		data0 = np.fromiter(rgdSamples, dtype = np.float64)
 		dwf.FDwfAnalogInStatusData(self.hdwf, 1, rgdSamples, self.acq_samples) # get channel 2 data
-		data1 = np.fromiter(rgdSamples, dtype = np.float)
+		data1 = np.fromiter(rgdSamples, dtype = np.float64)
 		if local_avg == 1:
 			return data0, data1
 		for _ in range(1, local_avg):
@@ -1176,9 +1176,9 @@ class Andi(object):
 				if status.value == DWFC.DwfStateDone.value :
 					break
 			dwf.FDwfAnalogInStatusData(self.hdwf, 0, rgdSamples, self.acq_samples) # get channel 1 data
-			data0 += np.fromiter(rgdSamples, dtype = np.float)
+			data0 += np.fromiter(rgdSamples, dtype = np.flfloat64oat)
 			dwf.FDwfAnalogInStatusData(self.hdwf, 1, rgdSamples, self.acq_samples) # get channel 2 data
-			data1 += np.fromiter(rgdSamples, dtype = np.float)
+			data1 += np.fromiter(rgdSamples, dtype = np.float64)
 		return data0/local_avg, data1/local_avg
 
 	# ██     ██  ██████

@@ -1527,7 +1527,7 @@ class Andi(object):
 	## Digital communications ##
 	############################
 
-	## SPI protocol
+	## d protocol
 	def SPI_reset(self):
 		dwf.FDwfDigitalSpiReset(self.hdwf)
 
@@ -1562,7 +1562,7 @@ class Andi(object):
 		'''
 			for logiclevel, consider using the dictionary: LogicLevel
 		'''
-		dwf.FDwfDigitalSpiSelect(self.hdwf,ct.c_int(channel),logiclevel)
+		dwf.FDwfDigitalSpiSelectSet(self.hdwf,ct.c_int(channel),logiclevel)
 
 	def SPI_write_read(self, cDQ, bit_per_word, values, N_read):
 		'''
@@ -1578,6 +1578,9 @@ class Andi(object):
 		for i in valuesRX:
 			RX.append(i)
 		return RX
+
+	def SPI_select(self,channel, logiclevel):
+		dwf.FDwfDigitalSpiSelect(self.hdwf,ct.c_int(channel),logiclevel)
 
 	def SPI_write_one(self, cDQ, Nbits, value):
 		'''

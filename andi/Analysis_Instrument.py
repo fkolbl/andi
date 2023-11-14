@@ -353,6 +353,10 @@ class Andi(object):
 		self.trigg_position    = 0
 		self.acq_freq          = None             # this is to manage acq when set_acq has not been set
 		self.warn_analog_trigg = False
+		self.in_average_filter_mode(-1)			#input channel are in average mode by default
+		self.in_channel_range_set(-1,5.0)		#5.0V input range by default
+
+
 
 	#########################################
 	## basic methods for device management ##
@@ -593,7 +597,7 @@ class Andi(object):
 		dwf.FDwfAnalogOutNodeDataSet(self.hdwf, ct.c_int(channel), DWFC.AnalogOutNodeCarrier, data_c, cBuffer)
 
 	## Simple generators
-	def sine(self,channel,freq,amp,offset = 0,symmetry = 50, phase = 0):
+	def sine(self,channel,freq,amp,offset = 0,symmetry = 50, phase = 0, activate = True):
 		self.reset_out(channel)
 		self.enable_out_channel(channel)
 		self.out_channel_off(channel)
@@ -603,9 +607,10 @@ class Andi(object):
 		self.out_set_Offset(channel,offset)
 		self.out_set_Symmetry(channel,symmetry)
 		self.out_set_Phase(channel,phase)
-		self.out_channel_on(channel)
+		if (activate):
+			self.out_channel_on(channel)
 
-	def square(self,channel,freq,amp,offset = 0,symmetry = 50, phase = 0):
+	def square(self,channel,freq,amp,offset = 0,symmetry = 50, phase = 0, activate = True):
 		self.reset_out(channel)
 		self.enable_out_channel(channel)
 		self.out_channel_off(channel)
@@ -615,9 +620,10 @@ class Andi(object):
 		self.out_set_Offset(channel,offset)
 		self.out_set_Symmetry(channel,symmetry)
 		self.out_set_Phase(channel,phase)
-		self.out_channel_on(channel)
+		if (activate):
+			self.out_channel_on(channel)
 
-	def triangle(self,channel,freq,amp,offset = 0,symmetry = 50, phase = 0):
+	def triangle(self,channel,freq,amp,offset = 0,symmetry = 50, phase = 0, activate = True):
 		self.reset_out(channel)
 		self.enable_out_channel(channel)
 		self.out_channel_off(channel)
@@ -627,7 +633,8 @@ class Andi(object):
 		self.out_set_Offset(channel,offset)
 		self.out_set_Symmetry(channel,symmetry)
 		self.out_set_Phase(channel,phase)
-		self.out_channel_on(channel)
+		if (activate):
+			self.out_channel_on(channel)
 
 	def rampup(self,channel,freq,amp,offset = 0,symmetry = 50, phase = 0):
 		print('to be coded')
@@ -699,6 +706,7 @@ class Andi(object):
 		freq = ct.c_double()
 		dwf.FDwfAnalogInFrequencyGet(self.hdwf,ct.byref(freq))
 		return freq.value
+	
 
 	def in_bits_info(self):
 		Nbits = ct.c_int()
@@ -785,11 +793,11 @@ class Andi(object):
 		self.in_channel_offset_set(channel,Voffset)
 		self.in_channel_attenuation_set(channel,attenuation)
 
-	def in_avering_sampling_mode(self,channel):
-		dwf.FDwfAnalogInChannelFilterSet(self.hdwf, ct.c_int(channel), DWFC.filterAverage)
-
-	def in_avering_decimate_mode(self,channel):
+	def in_decimate_filter_mode(self,channel):
 		dwf.FDwfAnalogInChannelFilterSet(self.hdwf, ct.c_int(channel), DWFC.filterDecimate)
+
+	def in_average_filter_mode(self,channel):
+		dwf.FDwfAnalogInChannelFilterSet(self.hdwf, ct.c_int(channel), DWFC.filterAverage)
 
 
 	## Trigger methods
@@ -802,9 +810,9 @@ class Andi(object):
 	def get_trigger_source(self):
 		"""returns the current trigger source and channel as a tuple"""
 		src = ct.c_ubyte()
-		chan = c_int()
+		chan = ct.c_int()
 		dwf.FDwfAnalogInTriggerSourceGet(self.hdwf, ct.byref(src))
-		dwf.FDwfAnalogInTriggerChannelGet(hdwf, ct.byref(chan))
+		dwf.FDwfAnalogInTriggerChannelGet(self.hdwf, ct.byref(chan))
 		return TriggerSourceById[src.value], chan.value
 
 	def get_trigger_threshold_info(self):
@@ -900,7 +908,7 @@ class Andi(object):
 
 	def set_AWG_trigger(self, source, type="Rising", position=0, ref="center"):
 		"""
-		DOESNT WORK!!
+		DOESNT WORK!! --> seems to work just fine (LR)
 		Set the AWG as a trigger 
 		   referenced as 0 and 1)
 		type is one of "Rising", "Falling" or "Both".
@@ -910,14 +918,13 @@ class Andi(object):
 		   at 10% of the recording, unsing "left border", acquisition starts precisely at the trigger time.
 		"""
 		source_name = ["AnalogOut1", "AnalogOut2", "AnalogOut3", "AnalogOut4"]
-		#self.trigg_ref      = TriggerReference[ref.lower()]
-		#self.trigg_position = position
+		self.trigg_ref      = TriggerReference[ref.lower()]
+		self.trigg_position = position
 		dwf.FDwfAnalogInTriggerAutoTimeoutSet(self.hdwf, ct.c_double(0)) #disable auto trigger
 		dwf.FDwfAnalogInTriggerSourceSet(self.hdwf, TriggerSourceByName[source_name[source]])
 		dwf.FDwfAnalogInTriggerConditionSet(self.hdwf, TriggerSlopeByName[type.lower()])
 		#dwf.FDwfAnalogInTriggerTypeSet(self.hdwf, DWFC.trigtypeEdge)           # trigtypeEdge
 		self.warn_analog_trigg = False
-
 
 
 	## signal recording methods
@@ -1101,9 +1108,8 @@ class Andi(object):
 				else:
 					self.acq_samples = 8192
 		
-		#enable recording channel and set filter to decimate to reduce noise
+		#enable recording channel 
 		dwf.FDwfAnalogInChannelEnableSet(self.hdwf, ct.c_int(-1), ct.c_bool(True))
-		dwf.FDwfAnalogInChannelFilterSet(self.hdwf, ct.c_int(-1), DWFC.filterAverage)
 		
 		#set trigger delay (the only reference offered is center, so we handle left and right manually)
 		if self.trigg_ref == TRIGG_REF_CENTER:
@@ -1414,10 +1420,9 @@ class Andi(object):
 			gain_ch1: np.array, vector containing the gain values, unitless or in dB (see above) CH1/amp (no phase associated)
 		'''
 
-		self.in_avering_sampling_mode(-1)
 		self.configure_network_analyser(amp,offset,Nperiods)
-		self.in_set_channel(channel=0, Vrange=Vrange_CH1, Voffset=offset_CH1)
-		self.in_set_channel(channel=1, Vrange=Vrange_CH2, Voffset=offset_CH2)
+		#self.in_set_channel(channel=0, Vrange=Vrange_CH1, Voffset=offset_CH1)
+		#self.in_set_channel(channel=1, Vrange=Vrange_CH2, Voffset=offset_CH2)
 
 		sleep(10*settling_time)
 		if n_points == 0:
@@ -1449,7 +1454,6 @@ class Andi(object):
 			else:
 				phase.append(phase2)
 				
-
 			gain_ch1.append(1/gain1)
 			if verbose:
 				printProgressBar(i + 1, n_points, prefix = 'Progress:', suffix = 'Complete', length = 50)
@@ -1495,10 +1499,10 @@ class Andi(object):
 			gain_ch1: np.array, vector containing the gain values, unitless or in dB (see above) CH1/amp (no phase associated)
 		'''
 
-		self.in_avering_sampling_mode(-1)
-		self.configure_network_analyser(amp,offset,Nperiods)
-		self.in_set_channel(channel=0, Vrange=Vrange_CH1, Voffset=offset_CH1)
-		self.in_set_channel(channel=1, Vrange=Vrange_CH2, Voffset=offset_CH2)
+		#self.in_avering_sampling_mode(-1)
+		#self.configure_network_analyser(amp,offset,Nperiods)
+		#self.in_set_channel(channel=0, Vrange=Vrange_CH1, Voffset=offset_CH1)
+		#self.in_set_channel(channel=1, Vrange=Vrange_CH2, Voffset=offset_CH2)
 
 		self.set_analyser_frequency(frequency)
 		sleep(settling_time)
@@ -1527,7 +1531,7 @@ class Andi(object):
 	## Digital communications ##
 	############################
 
-	## d protocol
+	## SPI protocol
 	def SPI_reset(self):
 		dwf.FDwfDigitalSpiReset(self.hdwf)
 

@@ -1388,8 +1388,7 @@ class Andi(object):
 		self.start_analyser()
 
 	def bode_measurement(self, fstart, fstop, n_points = 0, dB = False, deg = False, settling_time=0.01,
-		amp = 1.0, offset = 0.0, Nperiods = 16,Vrange_CH1 = 1.0,Vrange_CH2 = 1.0, 
-		offset_CH1 = 0.0,offset_CH2 = 0.0, verbose = True):
+		amp = 1.0, offset = 0.0, Nperiods = 16, verbose = True):
 		''' Perform a frequenct sweep to measure Gain and Phase of a DUT
 
 		Inputs: 
@@ -1407,8 +1406,6 @@ class Andi(object):
 			amp: 			Amplitude of the AWG output
 			offset: 		DC offset of the AWG output
 			Nperiods:		Number of periods to wait for the measurement 
-			Vrange_CH1/CH2: Set Input voltage range for CH1/CH2  
-			Offset_CH1/CH2: Set Input voltage offset for CH1/CH2  
 			verbose: 		verbosity of the algorithm. If true, a progression bar will be displayed in the terminal. 
 								True by default
 
@@ -1421,8 +1418,6 @@ class Andi(object):
 		'''
 
 		self.configure_network_analyser(amp,offset,Nperiods)
-		#self.in_set_channel(channel=0, Vrange=Vrange_CH1, Voffset=offset_CH1)
-		#self.in_set_channel(channel=1, Vrange=Vrange_CH2, Voffset=offset_CH2)
 
 		sleep(10*settling_time)
 		if n_points == 0:
@@ -1469,8 +1464,7 @@ class Andi(object):
 		return freq, gain, phase, gain_ch1
 
 	def single_frequency_gain_phase(self,frequency,dB = False, deg = False, settling_time=0.01,
-		amp = 1.0, offset = 0.0, Nperiods = 16,Vrange_CH1 = 1.0,Vrange_CH2 = 1.0, 
-		offset_CH1 = 0.0,offset_CH2 = 0.0, verbose = True):
+		amp = 1.0, offset = 0.0, Nperiods = 16, verbose = True):
 		''' Perform a single frequency analysis to measure Gain and Phase of a DUT
 
 		Inputs: 
@@ -1487,8 +1481,6 @@ class Andi(object):
 			amp: 			Amplitude of the AWG output
 			offset: 		DC offset of the AWG output
 			Nperiods:		Number of periods to wait for the measurement 
-			Vrange_CH1/CH2: Set Input voltage range for CH1/CH2  
-			Offset_CH1/CH2: Set Input voltage offset for CH1/CH2  
 			verbose: 		verbosity of the algorithm. If true, a progression bar will be displayed in the terminal. 
 								True by default
 
@@ -1498,11 +1490,6 @@ class Andi(object):
 			phase: np.array, vector containing the phase values, in radians or degrees (see above)
 			gain_ch1: np.array, vector containing the gain values, unitless or in dB (see above) CH1/amp (no phase associated)
 		'''
-
-		#self.in_avering_sampling_mode(-1)
-		#self.configure_network_analyser(amp,offset,Nperiods)
-		#self.in_set_channel(channel=0, Vrange=Vrange_CH1, Voffset=offset_CH1)
-		#self.in_set_channel(channel=1, Vrange=Vrange_CH2, Voffset=offset_CH2)
 
 		self.set_analyser_frequency(frequency)
 		sleep(settling_time)

@@ -1257,9 +1257,10 @@ class Andi(object):
 
     def digitalIO_read(self):
         dwRead = ct.c_uint32()
-        dwf.FDwfDigitalIOInputStatus(self.hdwf, ct.byref(dwRead))
+        dwf.FDwfDigitalIOOutputGet(self.hdwf, ct.byref(dwRead))
         # dwRead as bitfield (32 digits, removing 0b at the front
-        return bin(dwRead.value)[2:].zfill(16) 
+        #return int(bin(dwRead.value)[2:].zfill(16))
+        return(dwRead.value)
 
     ################################
     ## Impedance/Network Analyser ##

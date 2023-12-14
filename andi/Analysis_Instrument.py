@@ -1257,9 +1257,17 @@ class Andi(object):
 
     def digitalIO_read(self):
         dwRead = ct.c_uint32()
-        dwf.FDwfDigitalIOOutputGet(self.hdwf, ct.byref(dwRead))
+        # fetch digital IO information from the device 
+        dwf.FDwfDigitalIOStatus(self.hdwf) 
+        # read state of all pins, regardless of output enable
+        dwf.FDwfDigitalIOInputStatus(self.hdwf, ct.byref(dwRead)) 
         # dwRead as bitfield (32 digits, removing 0b at the front
         #return int(bin(dwRead.value)[2:].zfill(16))
+        return(dwRead.value)
+    
+    def digitalIO_read_outputs(self):
+        dwRead = ct.c_uint32()
+        dwf.FDwfDigitalIOOutputGet(self.hdwf, ct.byref(dwRead))
         return(dwRead.value)
 
     ################################

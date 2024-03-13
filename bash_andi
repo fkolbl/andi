@@ -1,3 +1,7 @@
 export PYTHONPATH="${PWD}:$PYTHONPATH"
 export PATH="$PWD/andi:$PATH"
 export BIMMS="${PWD}/andi"
+
+
+
+

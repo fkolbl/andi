@@ -1327,12 +1327,12 @@ class Andi(object):
         return resistance.value, capacitance.value
 
     def set_analyser_n_period(self, Nperiods):
-        dwf.FDwfAnalogImpedancePeriodSet(self.hdwf, ct.c_int(Nperiods*4))  #Odd but confirmed with scope...
+        dwf.FDwfAnalogImpedancePeriodSet(self.hdwf, ct.c_int(Nperiods)) 
 
     def get_analyser_n_period(self):
         Nperiods = ct.c_int()
         dwf.FDwfAnalogImpedancePeriodGet(self.hdwf, ct.byref(Nperiods))
-        return (Nperiods.value/4)										#Same as previously
+        return (Nperiods.value)
 
     def reset_analyser_compensation_parameters(self):
         dwf.FDwfAnalogImpedanceCompReset(self.hdwf)
@@ -1426,8 +1426,7 @@ class Andi(object):
             gain_ch1: np.array, vector containing the gain values, unitless or in dB (see above) CH1/amp (no phase associated)
         '''
 
-        self.configure_network_analyser(amp,offset,Nperiods)
-
+    
         sleep(10*settling_time)
         if n_points == 0:
             n_points = 10*np.ceil(np.log10(fstop/fstart)) + 1
@@ -1472,8 +1471,7 @@ class Andi(object):
             phase = 180.*phase/np.pi
         return freq, gain, phase, gain_ch1
 
-    def single_frequency_gain_phase(self,frequency,dB = False, deg = False, settling_time=0.01,
-        amp = 1.0, offset = 0.0, Nperiods = 16, verbose = True):
+    def single_frequency_gain_phase(self,frequency,dB = False, deg = False, settling_time=0.01, verbose = True):
         ''' Perform a single frequency analysis to measure Gain and Phase of a DUT
 
         Inputs: 
@@ -1499,7 +1497,6 @@ class Andi(object):
             phase: np.array, vector containing the phase values, in radians or degrees (see above)
             gain_ch1: np.array, vector containing the gain values, unitless or in dB (see above) CH1/amp (no phase associated)
         '''
-
         self.set_analyser_frequency(frequency)
         sleep(settling_time)
         self.analyzer_ignore_last_value() # ignore last capture, forces a new measurement after the settling time
@@ -1514,7 +1511,9 @@ class Andi(object):
         gain, phase = self.get_analyser_raw_input(1)
         if phase < np.pi/2:
             phase = (phase+2*np.pi)
-        gain_ch1 = (1/gain1)
+        gain_ch1 = 0
+        if (gain1 > 0): ## 
+            gain_ch1 = (1/gain1)
         sleep(10*settling_time)
         if dB:
             gain = 20*np.log10(gain)
